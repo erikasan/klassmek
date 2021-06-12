@@ -1,13 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
 import seaborn as sns
 from scipy.integrate import solve_ivp
 
 
 l = 1
-N = 300
-omega = 200
+N = 100
+omega = 20
 omega2 = omega*omega
 
 x0  = [i*l for i in range(N)]
@@ -16,7 +17,7 @@ vx0 = [0   for i in range(N)]
 vy0 = [0   for i in range(N)];
 
 mean   = N/2
-var    = 15
+var    = 150
 y0     = [10*np.exp(-(x0[i] - mean)**2/var) for i in range(N)]
 y0[0]  = 0
 y0[-1] = 0
@@ -31,7 +32,7 @@ def eoms(t, y):
     return xdot + ydot + vxdot + vydot
 
 T = 10
-t = np.linspace(0, T, 5000)
+t = np.linspace(0, T, 300)
 
 result = solve_ivp(eoms, (0, T), y0 = x0 + y0 + vx0 + vy0, t_eval = t)
 
@@ -44,7 +45,7 @@ ax.set_xlim(0, (N-1)*l)
 ax.set_ylim(-10, 10)
 plt.axis('off')
 sns.set()
-line, = ax.plot(x[:, 0], y[:, 0], '-o', markersize=0.1)
+line, = ax.plot(x[:, 0], y[:, 0], '-o', markersize=5, color='deeppink')
 
 def animation_frame(i):
     line.set_xdata(x[:, i])
@@ -52,5 +53,8 @@ def animation_frame(i):
     return line,
 
 
-animation = FuncAnimation(fig, func=animation_frame, frames=t.size, interval=0.000001)
-plt.show()
+ani = FuncAnimation(fig, func=animation_frame, frames=t.size, interval=10)
+#plt.show()
+
+ani.save('frida.gif', writer='imagemagick', fps=20)
+#animation.save('frida.gif', fps=20)
